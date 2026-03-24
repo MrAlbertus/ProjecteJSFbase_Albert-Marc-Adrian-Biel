@@ -1,12 +1,16 @@
 <!DOCTYPE html>
 <html lang="ca">
+
 <head>
     <meta charset="UTF-8">
     <title>ReBit | Sostenibilitat a Mataró</title>
+    <link rel="icon" type="image/x-icon" href="img/favicon.ico">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;800&family=Inter:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
     <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
@@ -15,14 +19,15 @@
     <script src="js/config.js"></script>
     <script src="js/firestore.js"></script>
 </head>
+
 <body class="dark-mode">
 
     <header class="header">
-        <div class="logo">Re<span>Bit</span></div>
+        <a href="#home" class="logo"><img src="img/logo.webp" alt="ReBit Logo" class="header-logo">Re<span>Bit</span></a>
         <nav class="nav-pills">
             <a href="#home" class="nav-btn">Inici</a>
             <a href="#mapa" class="nav-btn">Explorar</a>
-            <a href="#gestio" id="nav-gestio" class="nav-btn hidden">Afegir Punt</a>
+            <a href="#gestio" id="nav-gestio" class="nav-btn hidden">Gestió Admin</a>
         </nav>
         <div class="actions">
             <div class="theme-switch-wrapper">
@@ -77,11 +82,12 @@
                 </div>
                 <button id="btn-reset-filters" class="btn-secondary-sm">Reset</button>
             </div>
-            
+
             <div class="map-container-wrapper">
                 <div id="map"></div>
                 <div class="locations-list" id="locations-list">
-                    <div class="location-card" onclick="focusLocation(41.539, 2.444, 'Punt Verd Central', ['Oli', 'Piles'], true, '09:00 - 20:00')">
+                    <div class="location-card"
+                        onclick="focusLocation(41.539, 2.444, 'Punt Verd Central', ['Oli', 'Piles'], true, '09:00 - 20:00')">
                         <div class="icon">📍</div>
                         <div class="card-info">
                             <h4>Punt Verd Central</h4>
@@ -94,21 +100,120 @@
         </section>
 
         <section id="gestio" class="section hidden">
-            <div class="glass-form">
-                <h2>Afegir Nou Recurs</h2>
-                <form id="add-form" class="form-rebit">
-                    <input type="text" id="field-name" placeholder="Nom del lloc (String)" required>
-                    <div class="geo-inputs">
-                        <input type="number" step="any" id="lat" placeholder="Latitud (Geopoint)" required>
-                        <input type="number" step="any" id="lng" placeholder="Longitud (Geopoint)" required>
+            <div class="glass-form management-hub">
+                <h2>Gestió de la Plataforma</h2>
+
+                <div class="management-tabs">
+                    <button class="tab-btn active" onclick="showTab('tab-clients')">👥 Clients</button>
+                    <button class="tab-btn" onclick="showTab('tab-products')">📦 Productes</button>
+                    <button class="tab-btn" onclick="showTab('tab-recycle')">♻️ Reciclatge</button>
+                    <button class="tab-btn" onclick="showTab('tab-purchase')">💰 Compres</button>
+                    <button class="tab-btn" onclick="showTab('tab-data')">📊 Dades</button>
+                </div>
+
+                <div id="tab-clients" class="management-tab-content active">
+                    <h3>Nou Client</h3>
+                    <form id="form-client" class="form-rebit">
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+                            <input type="text" id="client-name" placeholder="Nom" required>
+                            <input type="text" id="client-lastname" placeholder="Cognoms" required>
+                        </div>
+                        <input type="text" id="client-nif" placeholder="NIF" required>
+                        <input type="email" id="client-email" placeholder="Email" required>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+                            <input type="text" id="client-street" placeholder="Carrer" required>
+                            <input type="text" id="client-postal" placeholder="Codi Postal" required>
+                        </div>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+                            <input type="text" id="client-poblation" placeholder="Població" required>
+                            <input type="text" id="client-province" placeholder="Província" required>
+                        </div>
+                        <button type="submit" class="btn-primary">Registrar Client</button>
+                    </form>
+                </div>
+
+                <div id="tab-products" class="management-tab-content">
+                    <h3>Nou Producte</h3>
+                    <form id="form-product" class="form-rebit">
+                        <input type="text" id="prod-name" placeholder="Nom del Producte" required>
+                        <input type="text" id="prod-image" placeholder="URL Imatge" required>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+                            <input type="number" id="prod-price" placeholder="Preu (€)" step="0.01" required>
+                            <input type="number" id="prod-quantity" placeholder="Quantitat Stock" required>
+                        </div>
+                        <select id="prod-point" required>
+                            <option value="">Selecciona Punt de Recollida...</option>
+                        </select>
+                        <textarea id="prod-desc" placeholder="Descripció"
+                            style="padding:12px; border-radius:12px; background:rgba(15,23,42,0.8); color:white; border:1px solid rgba(255,255,255,0.1);"></textarea>
+                        <button type="submit" class="btn-primary">Afegir al Catàleg</button>
+                    </form>
+                </div>
+
+                <div id="tab-recycle" class="management-tab-content">
+                    <h3>Registrar Reciclatge</h3>
+                    <form id="form-recycle" class="form-rebit">
+                        <select id="recycle-client" required>
+                            <option value="">Selecciona Client...</option>
+                        </select>
+                        <select id="recycle-point" required>
+                            <option value="">Selecciona Punt...</option>
+                        </select>
+
+                        <div class="type-selection-small">
+                            <p style="font-size:0.8rem; margin-bottom:8px; opacity:0.7;">Tipus de residu:</p>
+                            <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px;">
+                                <label><input type="checkbox" name="r-type" value="Oli"> Oli</label>
+                                <label><input type="checkbox" name="r-type" value="Piles"> Piles</label>
+                                <label><input type="checkbox" name="r-type" value="Roba"> Roba</label>
+                                <label><input type="checkbox" name="r-type" value="Plàstic"> Plàstic</label>
+                                <label><input type="checkbox" name="r-type" value="Vidre"> Vidre</label>
+                                <label><input type="checkbox" name="r-type" value="Paper"> Paper</label>
+                            </div>
+                        </div>
+
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                            <input type="number" id="recycle-quantity" placeholder="Quantitat" required>
+                            <input type="number" id="earned-points" placeholder="Punts guanyats" required>
+                        </div>
+                        <button type="submit" class="btn-primary">Confirmar Reciclatge</button>
+                    </form>
+                </div>
+
+                <div id="tab-purchase" class="management-tab-content">
+                    <h3>Registrar Compra</h3>
+                    <form id="form-purchase" class="form-rebit">
+                        <select id="purchase-client" required>
+                            <option value="">Selecciona Client...</option>
+                        </select>
+                        <select id="purchase-product" required>
+                            <option value="">Selecciona Producte...</option>
+                        </select>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+                            <input type="number" id="purchase-quantity" placeholder="Quantitat" required>
+                            <input type="number" id="purchase-discount" placeholder="Descompte Aplicat" value="0">
+                        </div>
+                        <button type="submit" class="btn-primary">Finalitzar Compra</button>
+                    </form>
+                </div>
+
+                <div id="tab-data" class="management-tab-content">
+                    <h3>Visualització de Registres</h3>
+                    <div class="data-controls">
+                        <select id="data-collection-select" class="form-rebit"
+                            onchange="loadCollectionData(this.value)">
+                            <option value="">Selecciona Col·lecció...</option>
+                            <option value="clients">👥 Clients</option>
+                            <option value="products">📦 Productes</option>
+                            <option value="donate">♻️ Reciclatge (Donacions)</option>
+                            <option value="purchase">💰 Compres</option>
+                            <option value="points">📍 Punts de Recollida</option>
+                        </select>
                     </div>
-                    <input type="text" id="field-type" placeholder="Tipus (Array: Oli, Piles, Roba...)" required>
-                    <div class="checkbox-group">
-                        <label><input type="checkbox" id="field-parking"> Té Pàrquing? (Boolean)</label>
+                    <div id="data-display-area" class="data-grid-viewer">
+                        <p class="placeholder-text">Selecciona una col·lecció per visualitzar els registres.</p>
                     </div>
-                    <input type="text" id="field-schedules" placeholder="Horari (Map: Dilluns-Divendres 9-20h)" required>
-                    <button type="submit" class="btn-primary">Guardar a Firestore</button>
-                </form>
+                </div>
             </div>
         </section>
 
@@ -160,18 +265,20 @@
         </section>
 
         <!-- Modals for Admin CRUD (Simplified for now) -->
-        <div id="admin-modal" class="hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:3000; display:flex; align-items:center; justify-content:center;">
-             <div class="glass-form" style="max-width: 600px; width: 90%;">
-                 <h2 id="modal-title">Gestió</h2>
-                 <div id="modal-content" style="max-height: 400px; overflow-y: auto; margin: 20px 0;">
-                     <!-- Dinàmic -->
-                 </div>
-                 <button onclick="closeModal()" class="btn-secondary-sm">Tancar</button>
-             </div>
+        <div id="admin-modal" class="hidden"
+            style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:3000; display:flex; align-items:center; justify-content:center;">
+            <div class="glass-form" style="max-width: 600px; width: 90%;">
+                <h2 id="modal-title">Gestió</h2>
+                <div id="modal-content" style="max-height: 400px; overflow-y: auto; margin: 20px 0;">
+                    <!-- Dinàmic -->
+                </div>
+                <button onclick="closeModal()" class="btn-secondary-sm">Tancar</button>
+            </div>
         </div>
     </div>
 
     <script src="js/map.js"></script>
     <script src="js/admin.js"></script>
 </body>
+
 </html>

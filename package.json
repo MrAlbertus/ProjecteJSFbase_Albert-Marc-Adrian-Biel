@@ -1,0 +1,9 @@
+{
+  "devDependencies": {
+    "onchange": "^7.1.0"
+  },
+  "scripts": {
+    "deploy": "firebase deploy --only hosting",
+    "watch": "onchange \"public/**/*\" -- npm run deploy"
+  }
+}
