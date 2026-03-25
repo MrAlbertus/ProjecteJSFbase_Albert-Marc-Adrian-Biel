@@ -22,6 +22,80 @@ body.light-mode {
     --shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
 }
 
+/* Light mode fixes for shop layout/cards (avoid hard-coded dark glass) */
+body.light-mode .filter-group select {
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--text);
+    border: 1px solid rgba(15, 23, 42, 0.12);
+}
+
+body.light-mode .shop-sidebar select,
+body.light-mode .shop-sidebar input[type="text"] {
+    background: rgba(255, 255, 255, 0.95);
+    color: var(--text);
+    border: 1px solid rgba(15, 23, 42, 0.12);
+}
+
+body.light-mode .shop-sidebar select:focus,
+body.light-mode .shop-sidebar input[type="text"]:focus {
+    background: rgba(255, 255, 255, 1);
+}
+
+body.light-mode .product-card {
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid rgba(15, 23, 42, 0.10);
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+}
+
+body.light-mode .product-card-img-wrapper {
+    background: rgba(15, 23, 42, 0.06);
+}
+
+body.light-mode .product-card-body p.desc,
+body.light-mode .product-meta .stock {
+    color: #475569;
+}
+
+body.light-mode .product-meta {
+    border-top: 1px solid rgba(15, 23, 42, 0.10);
+}
+
+body.light-mode .product-meta .clickable-point:hover {
+    color: var(--primary-dark);
+}
+
+/* Light mode fixes: admin forms + placeholders + data selector */
+body.light-mode .form-rebit input,
+body.light-mode .form-rebit select,
+body.light-mode .form-rebit textarea,
+body.light-mode #data-collection-select {
+    background: rgba(255, 255, 255, 0.98) !important;
+    color: var(--text) !important;
+    border: 1px solid rgba(15, 23, 42, 0.14) !important;
+}
+
+body.light-mode .form-rebit input:focus,
+body.light-mode .form-rebit select:focus,
+body.light-mode .form-rebit textarea:focus,
+body.light-mode #data-collection-select:focus {
+    background: #ffffff !important;
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 3px rgba(13, 177, 117, 0.18) !important;
+}
+
+body.light-mode .form-rebit input::placeholder,
+body.light-mode .form-rebit textarea::placeholder,
+body.light-mode .shop-sidebar input[type="text"]::placeholder {
+    color: rgba(30, 41, 59, 0.55);
+}
+
+/* Shop search has inline dark styles in index.html; force override in light mode */
+body.light-mode #shop-search {
+    background: rgba(255, 255, 255, 0.95) !important;
+    color: var(--text) !important;
+    border: 1px solid rgba(15, 23, 42, 0.12) !important;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -146,7 +220,6 @@ input:checked+.slider:before {
 .main-container {
     height: 100vh;
     overflow: hidden;
-    /* Global scroll blocked */
     position: relative;
     background: radial-gradient(circle at top right, rgba(13, 177, 117, 0.03), transparent),
         radial-gradient(circle at bottom left, rgba(13, 177, 117, 0.03), transparent);
@@ -162,11 +235,9 @@ input:checked+.slider:before {
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    /* Contigut a dalt */
-    padding: 120px 5% 40px 5%;
-    /* Més padding superior */
+    padding: 100px 5% 20px 5%; /* Menys padding per guanyar espai vertical */
     overflow-y: auto;
-    /* Permetre scroll DINS de la secció */
+    overflow-x: hidden;
     opacity: 0;
     transition: all 0.5s ease;
 }
@@ -179,13 +250,11 @@ input:checked+.slider:before {
 .map-container-wrapper {
     display: grid;
     grid-template-columns: 3fr 1.2fr;
-    /* Més espai al mapa */
-    gap: 30px;
+    gap: 20px;
     width: 100%;
     max-width: 1400px;
-    height: calc(100vh - 350px);
-    /* Alçada dinàmica */
-    min-height: 500px;
+    height: calc(100vh - 340px); /* Ajust més restrictiu per no generar scroll vertical a la finestra root */
+    min-height: 480px;
 }
 
 #map {
@@ -223,6 +292,10 @@ input:checked+.slider:before {
 
 .location-card .icon {
     font-size: 1.5rem;
+    flex-shrink: 0; /* Prevé deformacions d'icona per alts continguts textals */
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .location-card h4 {
@@ -349,18 +422,18 @@ input:checked+.slider:before {
 .filters-bar {
     display: flex;
     flex-wrap: wrap;
-    gap: 30px;
+    gap: 20px;
     background: var(--header-bg);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    padding: 20px 40px;
-    border-radius: 24px;
-    margin-bottom: 30px;
+    padding: 15px 30px;
+    border-radius: 18px;
+    margin-bottom: 20px;
     align-items: center;
     justify-content: center;
     box-shadow: var(--shadow);
     border: 1px solid rgba(255, 255, 255, 0.05);
-    width: 90%;
+    width: 100%;
     max-width: 1200px;
 }
 
@@ -392,6 +465,27 @@ input:checked+.slider:before {
 .filter-group input[type="checkbox"] {
     width: 18px;
     height: 18px;
+    accent-color: var(--primary);
+    cursor: pointer;
+}
+
+.shop-sidebar select, .shop-sidebar input[type="text"] {
+    background: rgba(15, 23, 42, 0.6);
+    color: var(--text);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 8px 15px;
+    border-radius: 8px;
+    outline: none;
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+.shop-sidebar select:focus, .shop-sidebar input[type="text"]:focus {
+    border-color: var(--primary);
+    background: rgba(15, 23, 42, 0.9);
+}
+
+.shop-sidebar input[type="checkbox"] {
     accent-color: var(--primary);
     cursor: pointer;
 }
@@ -615,6 +709,8 @@ input:checked+.slider:before {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     padding-bottom: 10px;
     margin-bottom: 5px;
@@ -623,12 +719,15 @@ input:checked+.slider:before {
 .data-item-card h4 {
     margin: 0;
     color: var(--primary);
+    flex: 1;
+    min-width: 180px;
 }
 
 .data-item-card .id-label {
     font-size: 0.7rem;
     font-family: monospace;
     opacity: 0.4;
+    overflow-wrap: anywhere;
 }
 
 .data-item-card .card-body {
@@ -654,6 +753,9 @@ input:checked+.slider:before {
 .data-field .value {
     font-size: 0.95rem;
     font-weight: 500;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    min-width: 0;
 }
 
 .placeholder-text {
@@ -788,4 +890,203 @@ input:checked+.slider:before {
     margin-bottom: 25px;
     font-size: 1.5rem;
     color: var(--primary);
+}
+
+@media (max-width: 768px) {
+    .shop-layout {
+        flex-direction: column !important;
+    }
+    .shop-sidebar {
+        width: 100% !important;
+    }
+}
+
+/* BOTIGA & PRODUCTS */
+.products-grid-container {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 15px;
+    width: 100%;
+    max-width: 1200px;
+    margin-bottom: 50px;
+}
+
+@media (max-width: 1200px) {
+    .products-grid-container {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 900px) {
+    .products-grid-container {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 560px) {
+    .products-grid-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+.product-card {
+    background: rgba(30, 41, 59, 0.4);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    overflow: hidden;
+    transition: all 0.4s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.product-card:hover {
+    transform: translateY(-8px);
+    border-color: var(--primary);
+    box-shadow: 0 15px 35px rgba(13, 177, 117, 0.15);
+}
+
+.product-card-img-wrapper {
+    width: 100%;
+    height: 140px;
+    position: relative;
+    background: rgba(0,0,0,0.2);
+}
+
+.product-card-img-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.product-price-tag {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: var(--primary);
+    color: white;
+    font-weight: 800;
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    box-shadow: 0 5px 15px rgba(13, 177, 117, 0.4);
+}
+
+.product-card-body {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.product-card-body h3 {
+    font-size: 1.1rem;
+    margin-bottom: 6px;
+    color: var(--text);
+}
+
+.product-card-body p.desc {
+    color: #94A3B8;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    margin-bottom: 12px;
+    flex-grow: 1;
+}
+
+.product-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+.product-meta .point {
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.product-meta .clickable-point:hover {
+    color: white;
+    text-decoration: underline;
+}
+
+.product-meta .stock {
+    color: #94A3B8;
+}
+
+.product-card-buy {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.05);
+    color: white;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.product-card-buy:not(:disabled):hover {
+    background: var(--primary);
+    color: white;
+}
+
+.product-card-buy:disabled {
+    background: rgba(255,255,255,0.02);
+    color: #64748B;
+    cursor: not-allowed;
+    border: 1px solid rgba(255,255,255,0.05);
+}
+
+.sold-out-badge {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: #EF4444;
+    color: white;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 0.75rem;
+}
+
+/* SHOP MODAL */
+.shop-modal-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(5px);
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.shop-modal-box {
+    max-width: 450px !important;
+    text-align: center;
+    padding: 30px !important;
+}
+
+.shop-modal-content {
+    margin: 25px 0;
+    font-size: 1.1rem;
+    color: #E2E8F0;
+}
+
+.shop-modal-content b {
+    color: var(--primary);
+}
+
+.shop-modal-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
 }

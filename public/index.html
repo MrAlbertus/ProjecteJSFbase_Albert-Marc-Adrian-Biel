@@ -27,7 +27,7 @@
         <nav class="nav-pills">
             <a href="#home" class="nav-btn">Inici</a>
             <a href="#mapa" class="nav-btn">Explorar</a>
-            <a href="#gestio" id="nav-gestio" class="nav-btn hidden">Gestió Admin</a>
+            <a href="#botiga" class="nav-btn">Botiga</a>
         </nav>
         <div class="actions">
             <div class="theme-switch-wrapper">
@@ -47,14 +47,14 @@
         <section id="home" class="section hero">
             <div class="badge">Projecte Green IT Mataró</div>
             <h1>Localitza el teu futur <span>Sostenible</span></h1>
-            <p>Troba punts de reciclatge i comerços de proximitat amb dades en temps real.</p>
+            <p>Troba ReBit Points i comerços de proximitat amb dades en temps real.</p>
             <a href="#mapa" class="btn-primary">Veure Ubicacions</a>
         </section>
 
         <section id="mapa" class="section">
-            <div class="section-title">
-                <h2>Directori de Recursos</h2>
-                <p>Filtra els resultats per trobar el que busques.</p>
+            <div class="section-title" style="text-align: center; margin-bottom: 20px;">
+                <h2 style="font-size: 2rem; margin-bottom: 5px; color: var(--text);">Directori de Recursos</h2>
+                <p style="opacity: 0.8; font-size: 0.95rem;">Filtra els resultats per trobar el que busques.</p>
             </div>
 
             <div class="filters-bar">
@@ -68,6 +68,8 @@
                         <option value="Plàstic">Plàstic</option>
                         <option value="Vidre">Vidre</option>
                         <option value="Paper">Paper</option>
+                        <option value="Runes">Runes</option>
+                        <option value="Medicaments">Medicaments</option>
                     </select>
                 </div>
                 <div class="filter-group">
@@ -99,16 +101,81 @@
             </div>
         </section>
 
+        <section id="botiga" class="section">
+            <div class="section-title" style="text-align: center; margin-bottom: 25px;">
+                <h2 style="font-size: 2.2rem; margin-bottom: 5px; color: var(--text);">Catàleg ReBit</h2>
+                <p style="opacity: 0.8; font-size: 0.95rem;">Descobreix i bescanvia productes sostenibles prop teu.</p>
+            </div>
+
+            <div class="shop-layout" style="display: flex; gap: 20px; align-items: flex-start; max-width: 1200px; margin: 0 auto; padding: 0 20px; width: 100%; box-sizing: border-box;">
+                <!-- LEFT SIDEBAR -->
+                <aside class="shop-sidebar" style="width: 220px; flex-shrink: 0; padding: 10px 20px 10px 0; border-right: 1px solid rgba(255,255,255,0.05);">
+                    <h3 style="margin-bottom: 15px; font-size: 1.1rem; color: var(--primary);">Filtres</h3>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display:block; margin-bottom:6px; font-weight:600; opacity:0.8; font-size:0.9rem;">Cerca</label>
+                        <input type="text" id="shop-search" placeholder="Productes..." class="filter-input-text" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(15,23,42,0.6); color: white; outline: none; font-size: 0.9rem;">
+                    </div>
+
+                    <div style="margin-bottom: 20px;">
+                        <label style="display:block; margin-bottom:6px; font-weight:600; opacity:0.8; font-size:0.9rem;">Població</label>
+                        <div id="shop-poblation-container" style="display:flex; flex-direction:column; gap:6px; font-size: 0.9rem;">
+                            <!-- Aquí s'hi carreguen dinàmicament les poblacions úniques -->
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display:block; margin-bottom:6px; font-weight:600; opacity:0.8; font-size:0.9rem;">ReBit Point</label>
+                        <select id="shop-point-filter" class="form-rebit" style="width: 100%; padding: 8px; font-size: 0.9rem;">
+                            <option value="all">Tots els ReBit Points</option>
+                        </select>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display:block; margin-bottom:6px; font-weight:600; opacity:0.8; font-size:0.9rem;">Categoria</label>
+                        <select id="shop-type-filter" class="form-rebit" style="width: 100%; padding: 8px; font-size: 0.9rem;">
+                            <option value="all">Tots els Tipus</option>
+                            <option value="Oli">Oli</option>
+                            <option value="Piles">Piles</option>
+                            <option value="Roba">Roba</option>
+                            <option value="Plàstic">Plàstic</option>
+                            <option value="Vidre">Vidre</option>
+                            <option value="Paper">Paper</option>
+                            <option value="Runes">Runes</option>
+                            <option value="Medicaments">Medicaments</option>
+                        </select>
+                    </div>
+                    
+                    <div style="margin-bottom: 10px; font-size: 0.9rem;">
+                        <label style="display:flex; align-items:center; gap:8px;">
+                            <input type="checkbox" id="shop-in-stock"> Només en stock
+                        </label>
+                    </div>
+                </aside>
+
+                <!-- RIGHT GRID -->
+                <main class="shop-main" style="flex: 1;">
+                    <div id="products-grid" class="products-grid-container">
+                        <!-- Productes renderitzats aquí -->
+                        <p class="placeholder-text" style="grid-column: 1 / -1;">Carregant productes...</p>
+                    </div>
+                </main>
+            </div>
+        </section>
+
         <section id="gestio" class="section hidden">
             <div class="glass-form management-hub">
-                <h2>Gestió de la Plataforma</h2>
+                <div style="display:flex; align-items:center; justify-content:space-between; gap: 15px; flex-wrap: wrap;">
+                    <h2 style="margin:0;">Gestió de la Plataforma</h2>
+                    <button id="btn-logout" class="btn-secondary-sm">Tancar Sessió</button>
+                </div>
 
                 <div class="management-tabs">
-                    <button class="tab-btn active" onclick="showTab('tab-clients')">👥 Clients</button>
-                    <button class="tab-btn" onclick="showTab('tab-products')">📦 Productes</button>
-                    <button class="tab-btn" onclick="showTab('tab-recycle')">♻️ Reciclatge</button>
-                    <button class="tab-btn" onclick="showTab('tab-purchase')">💰 Compres</button>
-                    <button class="tab-btn" onclick="showTab('tab-data')">📊 Dades</button>
+                    <button class="tab-btn active" onclick="showTab('tab-clients')">Clients</button>
+                    <button class="tab-btn" onclick="showTab('tab-products')">Productes</button>
+                    <button class="tab-btn" onclick="showTab('tab-recycle')">Reciclatge</button>
+                    <button class="tab-btn" onclick="showTab('tab-purchase')">Compres</button>
+                    <button class="tab-btn" onclick="showTab('tab-data')">Dades</button>
                 </div>
 
                 <div id="tab-clients" class="management-tab-content active">
@@ -142,8 +209,23 @@
                             <input type="number" id="prod-quantity" placeholder="Quantitat Stock" required>
                         </div>
                         <select id="prod-point" required>
-                            <option value="">Selecciona Punt de Recollida...</option>
+                            <option value="">Selecciona ReBit Point...</option>
                         </select>
+                        
+                        <div class="type-selection-small">
+                            <p style="font-size:0.8rem; margin-bottom:8px; opacity:0.7;">Tipus de producte:</p>
+                            <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:10px;">
+                                <label><input type="checkbox" name="prod-type" value="Oli"> Oli</label>
+                                <label><input type="checkbox" name="prod-type" value="Piles"> Piles</label>
+                                <label><input type="checkbox" name="prod-type" value="Roba"> Roba</label>
+                                <label><input type="checkbox" name="prod-type" value="Plàstic"> Plàstic</label>
+                                <label><input type="checkbox" name="prod-type" value="Vidre"> Vidre</label>
+                                <label><input type="checkbox" name="prod-type" value="Paper"> Paper</label>
+                                <label><input type="checkbox" name="prod-type" value="Runes"> Runes</label>
+                                <label><input type="checkbox" name="prod-type" value="Medicaments"> Medicament</label>
+                            </div>
+                        </div>
+
                         <textarea id="prod-desc" placeholder="Descripció"
                             style="padding:12px; border-radius:12px; background:rgba(15,23,42,0.8); color:white; border:1px solid rgba(255,255,255,0.1);"></textarea>
                         <button type="submit" class="btn-primary">Afegir al Catàleg</button>
@@ -157,24 +239,26 @@
                             <option value="">Selecciona Client...</option>
                         </select>
                         <select id="recycle-point" required>
-                            <option value="">Selecciona Punt...</option>
+                            <option value="">Selecciona ReBit Point...</option>
                         </select>
 
                         <div class="type-selection-small">
                             <p style="font-size:0.8rem; margin-bottom:8px; opacity:0.7;">Tipus de residu:</p>
-                            <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px;">
+                            <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:10px;">
                                 <label><input type="checkbox" name="r-type" value="Oli"> Oli</label>
                                 <label><input type="checkbox" name="r-type" value="Piles"> Piles</label>
                                 <label><input type="checkbox" name="r-type" value="Roba"> Roba</label>
                                 <label><input type="checkbox" name="r-type" value="Plàstic"> Plàstic</label>
                                 <label><input type="checkbox" name="r-type" value="Vidre"> Vidre</label>
                                 <label><input type="checkbox" name="r-type" value="Paper"> Paper</label>
+                                <label><input type="checkbox" name="r-type" value="Runes"> Runes</label>
+                                <label><input type="checkbox" name="r-type" value="Medicaments"> Medicament</label>
                             </div>
                         </div>
 
                         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
                             <input type="number" id="recycle-quantity" placeholder="Quantitat" required>
-                            <input type="number" id="earned-points" placeholder="Punts guanyats" required>
+                            <input type="number" id="earned-points" placeholder="ReBit Coins guanyats" required>
                         </div>
                         <button type="submit" class="btn-primary">Confirmar Reciclatge</button>
                     </form>
@@ -203,11 +287,11 @@
                         <select id="data-collection-select" class="form-rebit"
                             onchange="loadCollectionData(this.value)">
                             <option value="">Selecciona Col·lecció...</option>
-                            <option value="clients">👥 Clients</option>
-                            <option value="products">📦 Productes</option>
-                            <option value="donate">♻️ Reciclatge (Donacions)</option>
-                            <option value="purchase">💰 Compres</option>
-                            <option value="points">📍 Punts de Recollida</option>
+                            <option value="clients">Clients</option>
+                            <option value="products">Productes</option>
+                            <option value="donate">Reciclatge (Donacions)</option>
+                            <option value="purchase">Compres</option>
+                            <option value="points">ReBit Points</option>
                         </select>
                     </div>
                     <div id="data-display-area" class="data-grid-viewer">
@@ -227,41 +311,7 @@
                     <button type="submit" class="btn-primary" style="width: 100%;">Entrar</button>
                 </form>
             </div>
-
-            <div id="admin-dashboard" class="hidden">
-                <div class="section-title">
-                    <h2>Panell de Control</h2>
-                    <p>Gestiona els recursos i usuaris de ReBit.</p>
-                </div>
-                <div class="admin-grid">
-                    <div class="admin-card" onclick="showAdminSection('points')">
-                        <h3>📍 Punts</h3>
-                        <div class="count" id="count-points">-</div>
-                        <p>Ubicacions de reciclatge</p>
-                    </div>
-                    <div class="admin-card" onclick="showAdminSection('products')">
-                        <h3>📦 Productes</h3>
-                        <div class="count" id="count-products">-</div>
-                        <p>Catàleg de productes</p>
-                    </div>
-                    <div class="admin-card" onclick="showAdminSection('clients')">
-                        <h3>👥 Clients</h3>
-                        <div class="count" id="count-clients">-</div>
-                        <p>Gestió de punts i dades</p>
-                    </div>
-                    <div class="admin-card" onclick="showAdminSection('purchase')">
-                        <h3>💰 Compres</h3>
-                        <div class="count" id="count-purchases">-</div>
-                        <p>Historial de transaccions</p>
-                    </div>
-                    <div class="admin-card" onclick="showAdminSection('donate')">
-                        <h3>🎁 Donacions</h3>
-                        <div class="count" id="count-donations">-</div>
-                        <p>Recursos donats</p>
-                    </div>
-                </div>
-                <button id="btn-logout" class="btn-secondary-sm" style="margin-top: 40px;">Tancar Sessió</button>
-            </div>
+            <!-- Admin dashboard cards removed (use Gestió de la Plataforma instead) -->
         </section>
 
         <!-- Modals for Admin CRUD (Simplified for now) -->
@@ -275,10 +325,50 @@
                 <button onclick="closeModal()" class="btn-secondary-sm">Tancar</button>
             </div>
         </div>
+        
+        <div id="edit-point-modal" class="hidden shop-modal-overlay" style="z-index: 4000;">
+            <div class="glass-form shop-modal-box">
+                <h2>Editar ReBit Point</h2>
+                <form id="form-edit-point" class="form-rebit">
+                    <input type="text" id="edit-point-name" required placeholder="Nom del Punt">
+                    <input type="text" id="edit-point-poblation" required placeholder="Població">
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                        <div><label style="font-size:0.8rem; opacity:0.7;">Obertura</label><input type="time" id="edit-point-open" required></div>
+                        <div><label style="font-size:0.8rem; opacity:0.7;">Tancament</label><input type="time" id="edit-point-close" required></div>
+                    </div>
+                    <div style="display:flex; gap: 20px; align-items:center; margin-top:10px; padding: 10px; background: rgba(0,0,0,0.2); border-radius:8px;">
+                        <label><input type="checkbox" id="edit-point-parking"> Pàrquing habilitat</label>
+                        <label><input type="checkbox" id="edit-point-shop"> Punt Botiga Oficial</label>
+                    </div>
+                    
+                    <div class="type-selection-small" style="margin-top:20px;">
+                        <p style="font-size:0.8rem; margin-bottom:8px; opacity:0.7;">Tipus de residu autoritzats:</p>
+                        <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:10px;">
+                            <label><input type="checkbox" name="edit-p-type" value="Oli"> Oli</label>
+                            <label><input type="checkbox" name="edit-p-type" value="Piles"> Piles</label>
+                            <label><input type="checkbox" name="edit-p-type" value="Roba"> Roba</label>
+                            <label><input type="checkbox" name="edit-p-type" value="Plàstic"> Plàstic</label>
+                            <label><input type="checkbox" name="edit-p-type" value="Vidre"> Vidre</label>
+                            <label><input type="checkbox" name="edit-p-type" value="Paper"> Paper</label>
+                            <label><input type="checkbox" name="edit-p-type" value="Runes"> Runes</label>
+                            <label><input type="checkbox" name="edit-p-type" value="Medicaments"> Medicaments</label>
+                        </div>
+                    </div>
+                    
+                    <div style="display:flex; justify-content:space-between; margin-top:20px;">
+                        <button type="button" class="btn-secondary-sm" onclick="document.getElementById('edit-point-modal').classList.add('hidden')">Cancel·lar</button>
+                        <button type="submit" class="btn-primary">Guardar Canvis</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Shop purchase modal removed: purchases managed in backend/admin -->
     </div>
 
     <script src="js/map.js"></script>
     <script src="js/admin.js"></script>
+    <script src="js/shop.js"></script>
 </body>
 
 </html>

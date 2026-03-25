@@ -84,30 +84,38 @@ function renderMarkers(points) {
     listContainer.innerHTML = '';
 
     points.forEach(p => {
-        const { name, location, type, hasParking, schedules } = p;
-        if (location && (location.latitude || location.lat)) {
-            const lat = location.latitude || location.lat;
-            const lng = location.longitude || location.lng;
+        const { id, name, location, coords, type, hasParking, parking, schedules, address } = p;
+        const loc = location || coords;
+        if (loc && (loc.latitude !== undefined || loc.lat !== undefined)) {
+            const lat = loc.latitude !== undefined ? loc.latitude : loc.lat;
+            const lng = loc.longitude !== undefined ? loc.longitude : loc.lng;
             const typeList = Array.isArray(type) ? type : [type || 'General'];
+            const isParking = hasParking !== undefined ? hasParking : !!parking;
+            const addressStr = typeof address === 'string' ? address : '';
+            
+            const schedulesStr = typeof schedules === 'string' 
+                ? schedules 
+                : `${schedules?.open || '09:00'} - ${schedules?.close || '20:00'}`;
 
             // Marcador
             L.marker([lat, lng])
                 .addTo(markersLayer)
                 .bindPopup(`
+                    <div style="font-family: 'Outfit', 'Inter', sans-serif;">
                         <b style="color:#0db175">${name || 'Sense nom'}</b><br>
                         <small>${typeList.join(', ')}</small><br>
-                        <button class="btn-primary-xs" onclick="focusLocation(${lat}, ${lng}, '${name || 'Punt'}', ${JSON.stringify(typeList).replace(/"/g, '&quot;')}, ${!!hasParking}, '${schedules?.open || '09:00'} - ${schedules?.close || '20:00'}')">Ver detalles</button>
+                        <button class="btn-primary-xs" style="margin-top: 5px; cursor: pointer; border:none; border-radius: 4px; padding: 4px 8px; background: var(--primary); color: white;" onclick="focusLocation(${lat}, ${lng}, '${(name || 'ReBit Point').replace(/'/g, "\\'")}', [${typeList.map(t => `'${t}'`).join(',')}], ${isParking}, '${schedulesStr.replace(/'/g, "\\'")}', '${addressStr.replace(/'/g, "\\'")}', '${id || ''}')">Veure detalls</button>
                     </div>
                 `);
 
             // Llista
             const card = document.createElement('div');
             card.className = 'location-card';
-            card.onclick = () => focusLocation(lat, lng, name, typeList, !!hasParking, `${schedules?.open || '09:00'} - ${schedules?.close || '20:00'}`);
+            card.onclick = () => focusLocation(lat, lng, name, typeList, isParking, schedulesStr, addressStr, id);
             
             // Map types to emojis/badges
             const typeBadges = typeList.map(t => {
-                const colors = { "Oli": "#fbbf24", "Piles": "#f87171", "Roba": "#a78bfa", "Plàstic": "#60a5fa", "Vidre": "#34d399", "Paper": "#f97316" };
+                const colors = { "Oli": "#fbbf24", "Piles": "#f87171", "Roba": "#a78bfa", "Plàstic": "#60a5fa", "Vidre": "#34d399", "Paper": "#f97316", "Runes": "#9ca3af", "Medicaments": "#f472b6" };
                 const color = colors[t] || "var(--primary)";
                 return `<span style="display:inline-block; padding:2px 8px; border-radius:6px; background:${color}22; color:${color}; border:1px solid ${color}44; font-size:0.7rem; margin-right:4px; font-weight:700;">${t}</span>`;
             }).join('');
@@ -139,12 +147,24 @@ document.getElementById('btn-reset-filters').onclick = () => {
 // Inicialitzar la sincronització
 initRealTimeSync();
 
-// 📍 POPUP INFO EXISTENTE
-function focusLocation(lat, lng, name, types, parking, schedules) {
+// Reverse geocoding helper (Nominatim)
+async function reverseGeocode(lat, lng) {
+    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&addressdetails=1&lat=${lat}&lon=${lng}`);
+    const data = await res.json();
+    const addr = data?.address || {};
+    const city = addr.city || addr.town || addr.village || addr.municipality || "Desconeguda";
+    const display = data?.display_name || "";
+    return { city, address: display };
+}
+
+// 📍 POPUP INFO (with address)
+function focusLocation(lat, lng, name, types, parking, schedules, address = '', pointId = '') {
     map.flyTo([lat, lng], 16);
     const parkingStatus = parking ? "✅ Disponible" : "❌ No disponible";
+    const hasAddress = typeof address === 'string' && address.trim() !== '';
+    const addressLine = hasAddress ? `<b>Adreça:</b> ${address}<br>` : `<b>Adreça:</b> <span style="opacity:0.7;">Carregant...</span><br>`;
 
-    L.popup()
+    const popup = L.popup()
         .setLatLng([lat, lng])
         .setContent(`
             <div style="font-family: 'Outfit', 'Inter', sans-serif; padding: 5px;">
@@ -152,11 +172,38 @@ function focusLocation(lat, lng, name, types, parking, schedules) {
                 <div style="margin-top:5px; font-size:0.85rem">
                     <b>Tipus:</b> ${Array.isArray(types) ? types.join(', ') : types}<br>
                     <b>Pàrquing:</b> ${parkingStatus}<br>
-                    <b>Horari:</b> ${schedules}
+                    <b>Horari:</b> ${schedules}<br>
+                    ${addressLine}
                 </div>
             </div>
         `)
         .openOn(map);
+
+    if (!hasAddress && pointId) {
+        // Lazy-fill address for older points (and persist)
+        reverseGeocode(lat, lng).then(async ({ city, address: addr }) => {
+            if (!addr) return;
+            try {
+                await db.collection("points").doc(pointId).update({
+                    address: addr,
+                    poblation: city
+                });
+            } catch (e) {
+                // ignore write errors (rules/offline)
+            }
+            popup.setContent(`
+                <div style="font-family: 'Outfit', 'Inter', sans-serif; padding: 5px;">
+                    <b style="font-size:1rem; color:#0db175">${name}</b><br>
+                    <div style="margin-top:5px; font-size:0.85rem">
+                        <b>Tipus:</b> ${Array.isArray(types) ? types.join(', ') : types}<br>
+                        <b>Pàrquing:</b> ${parkingStatus}<br>
+                        <b>Horari:</b> ${schedules}<br>
+                        <b>Adreça:</b> ${addr}<br>
+                    </div>
+                </div>
+            `);
+        }).catch(() => { /* ignore */ });
+    }
 }
 
 // 🎨 TEMA
@@ -189,7 +236,7 @@ map.on('click', function (e) {
     const popupContent = `
         <div class="popup-add">
             <button class="btn-primary" onclick="showForm(${lat}, ${lng})">
-                ➕ Afegir punt aquí
+                ➕ Afegir ReBit Point aquí
             </button>
         </div>
     `;
@@ -203,11 +250,11 @@ map.on('click', function (e) {
 // 🧾 FORMULARIO
 function showForm(lat, lng) {
     const hours = Array.from({ length: 24 }, (_, i) => i.toString().padStart(2, '0') + ':00');
-    const types = ["Oli", "Piles", "Roba", "Plàstic", "Vidre", "Paper"];
+    const types = ["Oli", "Piles", "Roba", "Plàstic", "Vidre", "Paper", "Runes", "Medicaments"];
 
     const formHTML = `
         <div class="glass-popup form-rebit" style="padding:20px; min-width:280px; max-width:320px;">
-            <h4 style="margin-bottom:15px; color:var(--primary);">📍 Nou Punt de Recollida</h4>
+            <h4 style="margin-bottom:15px; color:var(--primary);">📍 Nou ReBit Point</h4>
 
             <input id="p-name" placeholder="Nom del lloc" required />
             
@@ -238,7 +285,7 @@ function showForm(lat, lng) {
             </div>
 
             <button class="btn-primary" onclick="savePoint(${lat}, ${lng})" style="margin-top:15px; width:100%; padding:12px; font-weight:700;">
-                Guardar Punt
+                Guardar ReBit Point
             </button>
         </div>
     `;
@@ -265,8 +312,21 @@ async function savePoint(lat, lng) {
             return;
         }
 
+        // Extreure Població + Adreça via Reverse Geocoding (Nominatim)
+        let city = "Desconeguda";
+        let address = "";
+        try {
+            const geo = await reverseGeocode(lat, lng);
+            city = geo.city || "Desconeguda";
+            address = geo.address || "";
+        } catch (e) {
+            console.warn("No s'ha pogut obtenir la ubicació");
+        }
+
         const newPoint = {
             name: name,
+            poblation: city,
+            address: address,
             coords: new firebase.firestore.GeoPoint(lat, lng), // Schema: coords
             type: types,
             parking: hasParking, // Schema: parking
@@ -277,7 +337,7 @@ async function savePoint(lat, lng) {
 
         await db.collection("points").add(newPoint);
         map.closePopup();
-        alert("Punt afegit correctament! 🔥");
+        alert("ReBit Point afegit correctament! 🔥");
 
     } catch (error) {
         console.error(error);
