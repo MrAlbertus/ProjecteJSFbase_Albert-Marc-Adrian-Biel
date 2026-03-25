@@ -904,7 +904,9 @@ input:checked+.slider:before {
 /* BOTIGA & PRODUCTS */
 .products-grid-container {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    /* Force max 4 columns; avoid accidental overrides */
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    grid-auto-flow: row;
     gap: 15px;
     width: 100%;
     max-width: 1200px;
@@ -913,20 +915,25 @@ input:checked+.slider:before {
 
 @media (max-width: 1200px) {
     .products-grid-container {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
     }
 }
 
 @media (max-width: 900px) {
     .products-grid-container {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
     }
 }
 
 @media (max-width: 560px) {
     .products-grid-container {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr !important;
     }
+}
+
+/* Hero: push content slightly lower */
+#home.hero {
+    padding-top: 125px;
 }
 
 .product-card {
